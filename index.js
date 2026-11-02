@@ -203,6 +203,8 @@ app.get('/studios/:id', async (req, res) => {
     }
 });
 
+
+
 // Protected Route: Add New Studio
 app.post('/studios', verifyToken, async (req, res) => {
     try {
@@ -231,7 +233,7 @@ app.get('/my-listings', verifyToken, async (req, res) => {
 
 // Protected Route: Update Studio
 
-// Protected Route: Update Studio
+
 app.put('/studios/:id', verifyToken, async (req, res) => {
     try {
         const id = req.params.id;
@@ -259,32 +261,6 @@ app.put('/studios/:id', verifyToken, async (req, res) => {
 });
 
 
-// app.put('/studios/:id', verifyToken, async (req, res) => {
-//     try {
-//         const id = req.params.id;
-//         const filter = { _id: new ObjectId(id) };
-//         const updatedStudio = req.body;
-//         const updateDoc = {
-//             $set: {
-//                 title: updatedStudio.title,
-//                 category: updatedStudio.category,
-//                 hourlyRate: updatedStudio.hourlyRate,
-//                 securityDeposit: updatedStudio.securityDeposit,
-//                 maxCapacity: updatedStudio.maxCapacity,
-//                 location: updatedStudio.location,
-//                 imageUrl: updatedStudio.imageUrl,
-//                 overview: updatedStudio.overview,
-//                 amenities: updatedStudio.amenities
-//             },
-//         };
-//         const result = await studioCollection.updateOne(filter, updateDoc);
-//         res.send(result);
-//     } catch (error) {
-//         res.status(500).send({ message: "Failed to update studio" });
-//     }
-// });
-
-// Protected Route: Delete Studio
 app.delete('/studios/:id', verifyToken, async (req, res) => {
     try {
         const id = req.params.id;
