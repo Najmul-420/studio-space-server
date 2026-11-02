@@ -93,6 +93,43 @@ app.post('/users', async (req, res) => {
 });
 
 
+// Google Authentication / Sign In Route
+app.post('/auth/google', async (req, res) => {
+    try {
+        const { email, name, photoUrl } = req.body;
+        
+        // ১. ডাটাবেজে ইউজার আছে কি না চেক করা
+        let user = await userCollection.findOne({ email });
+        
+        if (!user) {
+            // না থাকলে নতুন ইউজার হিসেবে সেভ করা
+            const newUser = { name, email, photoUrl, createdAt: new Date() };
+            await userCollection.insertOne(newUser);
+            user = newUser;
+        }
+
+        // ২. JWT টোকেন তৈরি করা
+        const token = jwt.sign(
+            { email: user.email }, 
+            process.env.JWT_SECRET || 'secretkey', 
+            { expiresIn: '7d' }
+        );
+        
+        // ৩. কুকিতে টোকেন সেট করে রেসপন্স পাঠানো
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        }).send({ 
+            success: true, 
+            user: { name: user.name, email: user.email, photoUrl: user.photoUrl } 
+        });
+    } catch (error) {
+        res.status(500).send({ message: "Google authentication failed" });
+    }
+});
+
+
 // Login Route: Authenticate user and send token cookie
 app.post('/auth/login', async (req, res) => {
     try {
