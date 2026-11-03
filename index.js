@@ -13,9 +13,17 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:5173'], // Frontend URLs
+    origin: [
+        'https://studio-frontend-dun.vercel.app', // আপনার লাইভ ফ্রন্টএন্ড ইউআরএল
+        'http://localhost:3000',                 // লোকাল হোস্ট
+        process.env.CLIENT_URL
+    ].filter(Boolean), 
     credentials: true
 }));
+// app.use(cors({
+//     origin: [process.env.CLIENT_URL , process.env.SERVER_URL], 
+//     credentials: true
+// }));
 
 // 2. JWT Verification Middleware (Challenge 1)
 const verifyToken = (req, res, next) => {
@@ -342,9 +350,6 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
-
-
-
-
+export default app;
 
 
