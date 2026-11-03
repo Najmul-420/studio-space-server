@@ -12,6 +12,14 @@ const app = express();
 // 1. Middlewares Setup (CORS for cookies support)
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors({
+    origin: [
+        'https://studio-frontend-dun.vercel.app', // আপনার লাইভ ফ্রন্টএন্ড ডোমেন
+        'https://studio-space-client.vercel.app', // আপনার অন্য ফ্রন্টএন্ড ডোমেন (যদি থাকে)
+        'http://localhost:3000'                  // লোকাল ডেভেলপমেন্টের জন্য
+    ], 
+    credentials: true
+}));
 // app.use(cors({
 //     origin: [
 //         'https://studio-frontend-dun.vercel.app', // আপনার লাইভ ফ্রন্টএন্ড ইউআরএল
@@ -21,28 +29,8 @@ app.use(cookieParser());
 //     credentials: true
 // }));
 
-// 
-// import cors from "cors";
 
-const allowedOrigins = [
-  "https://studio-frontend-dun.vercel.app",
-  "http://localhost:3000",
-];
 
-app.use(
-  cors({
-    origin: (origin, cb) => {
-      if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-      cb(new Error("Not allowed by CORS"));
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-
-app.options("*", cors()); // preflight
-// 
 // app.use(cors({
 //     origin: [process.env.CLIENT_URL , process.env.SERVER_URL], 
 //     credentials: true
@@ -370,15 +358,11 @@ app.get("/", (req, res) => {
 });
 
 
-if (!process.env.VERCEL) {
-  app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
-}
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
 
 export default app;
-// app.listen(PORT, () => {
-//     console.log(`Server is running on port ${PORT}`);
-// });
-
-// export default app;
 
 
