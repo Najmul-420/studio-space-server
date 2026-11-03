@@ -12,14 +12,37 @@ const app = express();
 // 1. Middlewares Setup (CORS for cookies support)
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({
-    origin: [
-        'https://studio-frontend-dun.vercel.app', // আপনার লাইভ ফ্রন্টএন্ড ইউআরএল
-        'http://localhost:3000',                 // লোকাল হোস্ট
-        process.env.CLIENT_URL
-    ].filter(Boolean), 
-    credentials: true
-}));
+// app.use(cors({
+//     origin: [
+//         'https://studio-frontend-dun.vercel.app', // আপনার লাইভ ফ্রন্টএন্ড ইউআরএল
+//         'http://localhost:3000',                 // লোকাল হোস্ট
+//         process.env.CLIENT_URL
+//     ].filter(Boolean), 
+//     credentials: true
+// }));
+
+// 
+// import cors from "cors";
+
+const allowedOrigins = [
+  "https://studio-frontend-dun.vercel.app",
+  "http://localhost:3000",
+];
+
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+      cb(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+app.options("*", cors()); // preflight
+// 
 // app.use(cors({
 //     origin: [process.env.CLIENT_URL , process.env.SERVER_URL], 
 //     credentials: true
@@ -41,7 +64,7 @@ const verifyToken = (req, res, next) => {
 };
 
 // 3. MongoDB Connection & Collections Setup
-const client = new MongoClient(process.env.MONGODB_URI);
+const client = new MongoClient(process.env.MONGODB_URL);
 
 let studioCollection;
 let bookingCollection;
@@ -346,10 +369,16 @@ app.get("/", (req, res) => {
     res.send('StudioSpace Backend Server is Running...');
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+}
 
 export default app;
+// app.listen(PORT, () => {
+//     console.log(`Server is running on port ${PORT}`);
+// });
+
+// export default app;
 
 
